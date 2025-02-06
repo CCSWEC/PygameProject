@@ -15,11 +15,15 @@ DARK_GREY = (64, 64, 64)
 
 
 # Setup screen
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Pong')
 
 # Initialize fps
 FPS = 60
+
+def draw(window):
+    window.fill(DARK_GREY)
+    pygame.display.update()
 
 # Paddle class
 class Paddle:
@@ -38,12 +42,7 @@ def main():
             if event.type == pygame.QUIT: # when user clicks x, closes game
                 running = False
 
-        # Fill screen white
-        screen.fill(DARK_GREY)
-
-        # Render game here
-
-        pygame.display.update()
+        draw(WINDOW)
 
         # limit fps to 60
         clock.tick(FPS)

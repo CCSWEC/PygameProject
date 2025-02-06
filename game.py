@@ -22,7 +22,7 @@ pygame.display.set_caption('Pong')
 FPS = 60
 
 def draw(window):
-    window.fill(DARK_GREY)
+    window.fill(WHITE)
     pygame.display.update()
 
 # Paddle class

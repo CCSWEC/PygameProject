@@ -22,7 +22,7 @@ pygame.display.set_caption('Pong')
 FPS = 60
 
 def draw(window):
-    window.fill(WHITE)
+    window.fill(DARK_GREY)
     pygame.display.update()
 
 # Paddle class
@@ -38,15 +38,16 @@ def main():
     clock = pygame.time.Clock()
 
     while running:
+        draw(WINDOW)
+        clock.tick(FPS)
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT: # when user clicks x, closes game
                 running = False
 
-        draw(WINDOW)
-
-        # limit fps to 60
-        clock.tick(FPS)
-
     pygame.quit()
+
+if __name__ == "__main__":
+    main()
 
 

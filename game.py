@@ -1,6 +1,8 @@
 import pygame
 import pygame.key
 import math
+import random
+import time
 
 pygame.init()
 
@@ -26,7 +28,7 @@ pygame.display.set_caption('Pong')
 FPS = 60
 
 # Paddle class
-class Paddle:
+class Paddle(pygame.Rect):
     COLOR = WHITE
 
     def __init__(self, x, y, width, height, controls):
@@ -38,7 +40,7 @@ class Paddle:
     
     # Function to draw the paddles
     def draw(self, window):
-        pygame.draw.rect(window, self.COLOR, (self.x, self.y, PADDLE_WIDTH, PADDLE_HEIGHT))
+        pygame.draw.rect(window, self.COLOR, self)
 
     # Function to move paddles
     def move(self):
@@ -50,26 +52,29 @@ class Paddle:
         self.y = pygame.math.clamp(self.y, 0, HEIGHT-PADDLE_HEIGHT)
 
 # Ball Class (B)
-class Ball:
+class Ball(pygame.Rect):
     COLOR = WHITE
 
-    def __init__(self, x, y, width, height):
-        self.angle = pygame.Vector2(1,0)
+    def __init__(self, x, y, width, height, angle):
+        self.angle = angle
         self.x = x
         self.y = y
         self.width = width
         self.height = height
     
     def draw(self, window):
-        pygame.draw.rect(window, self.COLOR, (self.x, self.y, BALL_WIDTH, BALL_HEIGHT))
+        pygame.draw.rect(window, self.COLOR, self)
 
     def move(self):
-        pass
-    def isColliding(self, paddles) -> bool:
-        return pygame.Rect(self.x, self.y, self.width, self.height).collidelist(paddles)
+        self.x += self.angle.x * BALL_SPEED
+        self.y += self.angle.y * BALL_SPEED
+        self.y = pygame.math.clamp(self.y, 0, HEIGHT - self.height)
+        if self.y == 0 or self.bottom == HEIGHT:
+            self.angle.y *= -1
+    
     def bounce(self, paddle):
-        self.angle.y = (self.y - (paddle.y + PADDLE_HEIGHT)) // (paddle.y - (paddle.y + PADDLE_HEIGHT)) - .5
-        # self.angle.x = mat
+        self.angle.y = (self.centery - paddle.y) / paddle.height - .5 # Set the ball's y direction between [-.5, .5] based on where it collides with the paddle
+        self.angle.x = math.copysign(1, self.centerx- paddle.centerx) # Set the ball to move in the opposite direction of the collision
 
 # Class to keep the score
 class ScoreBoard:
@@ -95,7 +100,7 @@ class Border:
     
 
 # Function for drawing on the screen
-def draw(window, paddles, ball):
+def draw(window, paddles, balls):
     window.fill(DARK_GREY)
 
     for y in range(HEIGHT//48, HEIGHT, HEIGHT//12):
@@ -104,7 +109,8 @@ def draw(window, paddles, ball):
     for paddle in paddles:
         paddle.draw(WINDOW)
 
-    ball.draw(WINDOW)
+    for ball in balls:
+        ball.draw(WINDOW)
     pygame.display.update()
 
 # Main function
@@ -117,20 +123,38 @@ def main():
     left_paddle = Paddle(WIDTH - PADDLE_OFFSET - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT, [pygame.K_UP, pygame.K_DOWN])
     paddles = [right_paddle, left_paddle]
 
-    # Make ball
-    ball = Ball(WIDTH // 2 - BALL_WIDTH//2, HEIGHT // 2 - BALL_HEIGHT // 2, BALL_WIDTH, BALL_HEIGHT)
+    balls = [] # Initialize ball array
 
     # Game loop
     while running:
-        draw(WINDOW, paddles, ball)
+        draw(WINDOW, paddles, balls)
+
         for paddle in paddles:
             paddle.move()
+
+        for ball in balls:
+            ball.move()
+            if ball.collidelist(paddles) != -1:
+                ball.bounce(paddles[ball.collidelist(paddles)])
+
+            if ball.centerx < 0 or ball.centerx > WIDTH: # when the ball goes out of bounds, remove it
+                balls.remove(ball)
+                print(balls.__len__(), "balls in play")
             
         clock.tick(FPS)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT: # when user clicks x, closes game
                 running = False
+
+            if event.type == pygame.KEYDOWN: # when user presses space, make a ball (for testing)
+                if event.key == pygame.K_SPACE:
+                    # random needs to be called when a ball is created, or it only randomize the angle once on startup
+                    balls.append(
+                        Ball(WIDTH // 2 - BALL_WIDTH//2, HEIGHT // 2 - BALL_HEIGHT // 2, BALL_WIDTH, BALL_HEIGHT, 
+                             pygame.Vector2(random.choice([-1, 1]) , random.random() - .5))
+                             )
+                    print(balls.__len__(), "balls in play")
 
     pygame.quit()
 

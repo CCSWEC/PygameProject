@@ -52,19 +52,18 @@ class Paddle(pygame.Rect):
         self.y = pygame.math.clamp(self.y, 0, HEIGHT-PADDLE_HEIGHT)
 
 # Ball Class (B)
-class Ball:
+class Ball(pygame.Rect):
     COLOR = WHITE
 
-    def __init__(self, x, y, width, height, angle, radius):
+    def __init__(self, x, y, width, height, angle):
         self.angle = angle
         self.x = x
         self.y = y
         self.width = width
         self.height = height
-        self.radius = radius
     
     def draw(self, window):
-        pygame.draw.circle(window, self.COLOR, (self.x, self.y), self.radius)
+        pygame.draw.rect(window, self.COLOR, self)
 
     def move(self):
         self.x += self.angle.x * BALL_SPEED

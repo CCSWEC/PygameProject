@@ -84,7 +84,7 @@ class ScoreBoard:
         self.window = window
         self.width = width
         self.height = height
-        self.font = pygame.font.Font(None, 50)
+        self.font = pygame.font.Font(None, 150)
         self.player1_score = 0
         self.player2_score = 0
 
@@ -93,6 +93,22 @@ class ScoreBoard:
         self.player1_score = player1
         self.player2_score = player2
 
+    def increase_score(self, player):
+        if player == 1:
+            self.player1_score += 1
+        elif player == 2:
+            self.player2_score += 1
+
+    def draw(self):
+        p1_text = self.font.render(str(self.player1_score), True, WHITE)
+        p2_text = self.font.render(str(self.player2_score), True, WHITE)
+
+        p1_rect = p1_text.get_rect(center=(self.width // 2 - 100, 50))
+        p2_rect = p2_text.get_rect(center=(self.width // 2 + 100, 50))
+
+        self.window.blit(p1_text, p1_rect)
+        self.window.blit(p2_text, p2_rect)
+
     
 #Border for Ball to bounce off of 
 class Border:
@@ -100,7 +116,7 @@ class Border:
     
 
 # Function for drawing on the screen
-def draw(window, paddles, balls):
+def draw(window, paddles, balls, scoreboard):
     window.fill(DARK_GREY)
 
     for y in range(HEIGHT//48, HEIGHT, HEIGHT//12):
@@ -111,6 +127,10 @@ def draw(window, paddles, balls):
 
     for ball in balls:
         ball.draw(WINDOW)
+
+    scoreboard.draw()
+
+    
     pygame.display.update()
 
 # Main function
@@ -125,9 +145,11 @@ def main():
 
     balls = [] # Initialize ball array
 
+    scoreboard = ScoreBoard(WINDOW, WIDTH, HEIGHT)
+
     # Game loop
     while running:
-        draw(WINDOW, paddles, balls)
+        draw(WINDOW, paddles, balls, scoreboard)
 
         for paddle in paddles:
             paddle.move()
@@ -137,24 +159,26 @@ def main():
             if ball.collidelist(paddles) != -1:
                 ball.bounce(paddles[ball.collidelist(paddles)])
 
-            if ball.centerx < 0 or ball.centerx > WIDTH: # when the ball goes out of bounds, remove it
+            if ball.centerx < 0:  # Right player scores
+                scoreboard.increase_score(2)
                 balls.remove(ball)
-                print(balls.__len__(), "balls in play")
-            
+            elif ball.centerx > WIDTH:  # Left player scores
+                scoreboard.increase_score(1)
+                balls.remove(ball)
+
         clock.tick(FPS)
-        
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT: # when user clicks x, closes game
                 running = False
-
-            if event.type == pygame.KEYDOWN: # when user presses space, make a ball (for testing)
-                if event.key == pygame.K_SPACE:
-                    # random needs to be called when a ball is created, or it only randomize the angle once on startup
-                    balls.append(
-                        Ball(WIDTH // 2 - BALL_WIDTH//2, HEIGHT // 2 - BALL_HEIGHT // 2, BALL_WIDTH, BALL_HEIGHT, 
-                             pygame.Vector2(random.choice([-1, 1]) , random.random() - .5))
-                             )
-                    print(balls.__len__(), "balls in play")
+            if len(balls) == 0:
+                time.sleep(.10) # wait one decisecond before being able to spawn a ball
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        balls.append(
+                            Ball(WIDTH // 2 - BALL_WIDTH//2, HEIGHT // 2 - BALL_HEIGHT // 2, BALL_WIDTH, BALL_HEIGHT, 
+                                pygame.Vector2(random.choice([-1, 1]) , random.random() - .5))
+                                )
 
     pygame.quit()
 

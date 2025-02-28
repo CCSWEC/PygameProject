@@ -23,6 +23,7 @@ BLACK = (0, 0, 0)
 DARK_GREY = (64, 64, 64)
 RED = (210, 4, 45)
 
+FONT = pygame.font.Font(None, 50)
 # Setup screen
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Pong')
@@ -31,53 +32,46 @@ pygame.display.set_caption('Pong')
 FPS = 60
 
 # Function for drawing on the screen
-def draw(window):
+def draw(window, game):
     window.fill(DARK_GREY)
-    
+    if (game):
+        game.draw(window)
+    else:
+        selectText = "Pick a Game (Press Number):\n1. Pong\n2. Mindsweeper (NOT YET)\n(press ESC to exit a game)"
+        lines = selectText.splitlines()
+        for line in range(lines.__len__()):
+            text = FONT.render(lines[line], True, WHITE)
+            window.blit(text, (0, HEIGHT/2+50*line, WIDTH, HEIGHT/2-50*line))
+
     pygame.display.update()
 
 # Main function
 def main():
-    game = None
     running = True
     clock = pygame.time.Clock()
-
+    game = None
     # Make Paddles and put them in a list
-    game = PongGame()
 
     # Game loop
     while running:
-        game.main()
-
-        # for paddle in paddles:
-        #     paddle.move()
-
-        # for ball in balls:
-        #     ball.move()
-        #     if ball.collidelist(paddles) != -1:
-        #         ball.bounce(paddles[ball.collidelist(paddles)])
-
-        #     if ball.centerx < 0:  # Right player scores
-        #         scoreboard.increase_score(2)
-        #         balls.remove(ball)
-        #     elif ball.centerx > WIDTH:  # Left player scores
-        #         scoreboard.increase_score(1)
-        #         balls.remove(ball)
+        draw(WINDOW, game)
+        if (game):
+            game.main()
 
         clock.tick(FPS)
 
-        game.event()
-        # for event in pygame.event.get():
-        #     if event.type == pygame.QUIT: # when user clicks x, closes game
-        #         running = False
-        #     if len(balls) == 0:
-        #         time.sleep(.10) # wait one decisecond before being able to spawn a ball
-        #         if event.type == pygame.KEYDOWN:
-        #             if event.key == pygame.K_SPACE:
-        #                 balls.append(
-        #                     Ball(WIDTH // 2 - BALL_WIDTH//2, HEIGHT // 2 - BALL_HEIGHT // 2, BALL_WIDTH, BALL_HEIGHT, 
-        #                         pygame.Vector2(random.choice([-1, 1]) , random.random() - .5))
-        #                         )
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT: # when user clicks x, closes game
+                running = False
+            if (game):
+                game.event(event)
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        game = None
+            else:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_1:
+                        game = PongGame()
     pygame.quit()
 
 # Calling main 

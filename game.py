@@ -63,7 +63,7 @@ class Ball(pygame.Rect):
         self.height = height
     
     def draw(self, window):
-        pygame.draw.rect(window, self.COLOR, self)
+        pygame.draw.circle(window, self.COLOR, self.center, self.width/2)
 
     def move(self):
         self.x += self.angle.x * BALL_SPEED

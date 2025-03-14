@@ -21,17 +21,10 @@ BLACK = (0, 0, 0)
 DARK_GREY = (64, 64, 64)
 RED = (210, 4, 45)
 
-# Setup screen
-WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Pong')
-
-# Initialize fps
-FPS = 60
-
 class PongGame:
 
     # Main function
-    def __init__(self):
+    def __init__(self, window):
         self.running = True
 
         # Make Paddles and put them in a list
@@ -41,7 +34,7 @@ class PongGame:
 
         self.balls = [] # Initialize ball array
 
-        self.scoreboard = ScoreBoard(WINDOW, WIDTH, HEIGHT)
+        self.scoreboard = ScoreBoard(window, WIDTH, HEIGHT)
         
     # Function for drawing on the screen
     def draw(self, window):
@@ -49,10 +42,10 @@ class PongGame:
             pygame.draw.line(window, WHITE, (WIDTH // 2, y), (WIDTH // 2, y + HEIGHT//24), 4)
         
         for paddle in self.paddles:
-            paddle.draw(WINDOW)
+            paddle.draw(window)
 
         for ball in self.balls:
-            ball.draw(WINDOW)
+            ball.draw(window)
 
         self.scoreboard.draw()
 

@@ -3,36 +3,64 @@ import pygame.key
 import math
 import random
 import time
+from collections import namedtuple
 from enum import Enum
 
-CelState = Enum("Normal", "Mine")
+class CelState(Enum):
+    Normal = 1
+    Mine = 2
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+DARK_GREY = (64, 64, 64)
+RED = (210, 4, 45)
+
+gridPosition = namedtuple('gridPosition', ['x', 'y'])
+
 class Cel(pygame.Rect):
+    COLOR = WHITE
+
     def __init__(self, x, y, width):
         self.state = CelState.Normal
-        self.gridPosition = {x:0,y:0}
+        self.gridPosition = gridPosition(x=x, y=y)
         self.adjacentMines = 0
         self.hidden = True
         self.flagged = False
-        self.x = x
-        self.y = y
+        self.x = (width + 2) * x 
+        self.y = (width + 2) * y
         self.width = width
         self.height = width
-    
-    def main(self):
-        pass
+
     def draw(self, window):
         pygame.draw.rect(window, self.COLOR, self)
+
     def clear(self, mineArray):
+        if (self.flagged): return
+
         self.hidden = False
-        for y in range(3):
-            for x in range(3):
-                if (mineArray[self.gridPosition.y + y-1][self.gridPosition.x + x-1].adjacentMines == 0):
-                    mineArray[self.gridPosition.y + y-1][self.gridPosition.x + x-1].clear(mineArray)
+        if self.state == CelState.Mine:
+            self.COLOR = RED
+        else:
+            self.COLOR = DARK_GREY
+
+        for y in [-1, 1]:
+            if (self.gridPosition.y + y == -1 or self.gridPosition.y + y == len(mineArray)): continue
+            mine = mineArray[self.gridPosition.y + y][self.gridPosition.x]
+            if (mine.adjacentMines == 0 and mine.hidden):
+                mine.clear(mineArray)
+            mineArray[self.gridPosition.y + y][self.gridPosition.x] = mine
+
+        for x in [-1, 1]:
+            if (self.gridPosition.x + x == -1 or self.gridPosition.x + x == len(mineArray[0])): continue
+            mine = mineArray[self.gridPosition.y][self.gridPosition.x + x]
+            if (mine.adjacentMines == 0 and mine.hidden):
+                mine.clear(mineArray)
+            mineArray[self.gridPosition.y][self.gridPosition.x + x] = mine
 
     def setCelNumber(self, mineArray):
-        for y in range(3):
-            for x in range(3):
-                if ((y == 1 and x == 1) 
-                    or (self.gridPosition.y + y-1 == -1 or self.gridPosition.y + y-1 == len(mineArray))
-                    or (self.gridPosition.x + x-1 == -1 or self.gridPosition.x + x-1 == len(mineArray[0]))): continue
-                mineArray[self.gridPosition.y + y-1][self.gridPosition.x + x-1].adjacentMines += 1
+        for y in [-1,0,1]:
+            if (self.gridPosition.y + y == -1 or self.gridPosition.y + y == len(mineArray)): continue
+            for x in [-1,0,1]:
+                if ((y == 0 and x == 0) or(self.gridPosition.x + x == -1 or self.gridPosition.x + x == len(mineArray[0]))): continue
+                mineArray[self.gridPosition.y + y][self.gridPosition.x + x].adjacentMines += 1

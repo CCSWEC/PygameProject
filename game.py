@@ -3,10 +3,10 @@ import pygame.key
 import math
 import random
 import time
-from pong.Ball import Ball
-from pong.Paddle import Paddle
+
 from pong.PongGame import PongGame
-from pong.ScoreBoard import ScoreBoard
+from Minesweeper.minesweeperGame import MinesweeperGame
+
 pygame.init()
 
 # Widths, heights and speeds
@@ -26,7 +26,7 @@ RED = (210, 4, 45)
 FONT = pygame.font.Font(None, 50)
 # Setup screen
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Pong')
+pygame.display.set_caption('Choose a Game!')
 
 # Initialize fps
 FPS = 60
@@ -68,10 +68,15 @@ def main():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         game = None
+                        pygame.display.set_caption('Choose a Game!')
             else:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_1:
-                        game = PongGame()
+                        game = PongGame(WINDOW)
+                        pygame.display.set_caption('Pong')
+                    if event.key == pygame.K_2:
+                        game = MinesweeperGame()
+                        pygame.display.set_caption('Minesweeper')
     pygame.quit()
 
 # Calling main 

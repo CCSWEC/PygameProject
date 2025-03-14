@@ -39,7 +39,7 @@ def draw(window, game):
     else:
         selectText = "Pick a Game (Press Number):\n1. Pong\n2. Mindsweeper (NOT YET)\n(press ESC to exit a game)"
         lines = selectText.splitlines()
-        for line in range(lines.__len__()):
+        for line in range(len(lines)):
             text = FONT.render(lines[line], True, WHITE)
             window.blit(text, (0, HEIGHT/2+50*line, WIDTH, HEIGHT/2-50*line))
 

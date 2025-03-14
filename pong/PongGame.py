@@ -29,18 +29,6 @@ pygame.display.set_caption('Pong')
 FPS = 60
 
 class PongGame:
-    # Function for drawing on the screen
-    def draw(self, window):
-        for y in range(HEIGHT//48, HEIGHT, HEIGHT//12):
-            pygame.draw.line(window, WHITE, (WIDTH // 2, y), (WIDTH // 2, y + HEIGHT//24), 4)
-        
-        for paddle in self.paddles:
-            paddle.draw(WINDOW)
-
-        for ball in self.balls:
-            ball.draw(WINDOW)
-
-        self.scoreboard.draw()
 
     # Main function
     def __init__(self):
@@ -54,6 +42,19 @@ class PongGame:
         self.balls = [] # Initialize ball array
 
         self.scoreboard = ScoreBoard(WINDOW, WIDTH, HEIGHT)
+        
+    # Function for drawing on the screen
+    def draw(self, window):
+        for y in range(HEIGHT//48, HEIGHT, HEIGHT//12):
+            pygame.draw.line(window, WHITE, (WIDTH // 2, y), (WIDTH // 2, y + HEIGHT//24), 4)
+        
+        for paddle in self.paddles:
+            paddle.draw(WINDOW)
+
+        for ball in self.balls:
+            ball.draw(WINDOW)
+
+        self.scoreboard.draw()
 
         # Game loop
     def main(self):

@@ -13,6 +13,7 @@ MINE_COUNT = 40
 class MinesweeperGame:
     # Main function
     def __init__(self):
+        self.caption = 'Minesweeper'
         self.running = True
         self.mineArray = []
         self.setMines()
@@ -49,13 +50,18 @@ class MinesweeperGame:
 
         # Game loop
     def main(self):
-        pass
+        for col in self.mineArray:
+            for mine in col:
+                if (mine.clearCascading):
+                    mine.update(self.mineArray)
 
     def event(self, event):
        leftMouse, _, rightMouse = pygame.mouse.get_pressed()
        for col in self.mineArray:
             for mine in col:
-                if (event.type == pygame.MOUSEBUTTONDOWN and mine.collidepoint(pygame.mouse.get_pos())):
+                if (event.type == pygame.MOUSEBUTTONDOWN 
+                    and mine.collidepoint(pygame.mouse.get_pos())
+                    and not mine.clearCascading):
                     if leftMouse:
                         mine.clear(self.mineArray)
                     elif rightMouse:

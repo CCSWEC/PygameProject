@@ -24,7 +24,8 @@ RED = (210, 4, 45)
 class PongGame:
 
     # Main function
-    def __init__(self, window):
+    def __init__(self):
+        self.caption = 'Pong'
         self.running = True
 
         # Make Paddles and put them in a list
@@ -34,7 +35,7 @@ class PongGame:
 
         self.balls = [] # Initialize ball array
 
-        self.scoreboard = ScoreBoard(window, WIDTH, HEIGHT)
+        self.scoreboard = ScoreBoard(WIDTH, HEIGHT)
         
     # Function for drawing on the screen
     def draw(self, window):
@@ -47,7 +48,7 @@ class PongGame:
         for ball in self.balls:
             ball.draw(window)
 
-        self.scoreboard.draw()
+        self.scoreboard.draw(window)
 
         # Game loop
     def main(self):

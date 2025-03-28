@@ -10,8 +10,7 @@ WHITE = (255, 255, 255)
 class ScoreBoard:
     COLOR = WHITE
 
-    def __init__(self, window, width, height):
-        self.window = window
+    def __init__(self, width, height):
         self.width = width
         self.height = height
         self.font = pygame.font.Font(None, 150)
@@ -29,14 +28,14 @@ class ScoreBoard:
         elif player == 2:
             self.player2_score += 1
 
-    def draw(self):
+    def draw(self, window):
         p1_text = self.font.render(str(self.player1_score), True, WHITE)
         p2_text = self.font.render(str(self.player2_score), True, WHITE)
 
         p1_rect = p1_text.get_rect(center=(self.width // 2 - 100, 50))
         p2_rect = p2_text.get_rect(center=(self.width // 2 + 100, 50))
 
-        self.window.blit(p1_text, p1_rect)
-        self.window.blit(p2_text, p2_rect)
+        window.blit(p1_text, p1_rect)
+        window.blit(p2_text, p2_rect)
 
     
